@@ -4,9 +4,38 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="JS/rockPaperScissors.js" defer></script>
 	<title>Rock, Paper, Scissors</title>
 </head>
 <body>
-	
+	<h1>Rock, Paper, Scissors!</h1>
+	<h3>Make your choice:</h3>
+	<ul>
+		<li>
+			<button 
+			class="playerChoice" 
+			data-player_choice="rock">
+				Rock
+			</button>
+		</li>
+		<li>
+			<button 
+			class="playerChoice"
+			data-player_choice="paper">
+				Paper
+			</button>
+		</li>
+		<li>
+			<button 
+			class="playerChoice"
+			data-player_choice="scissors">
+				Scissors
+			</button>
+		</li>
+	</ul>
+	<div>
+		<h3>Result:</h3>
+		<p class="c-resultado_partida"></p>
+	</div>
 </body>
 </html>

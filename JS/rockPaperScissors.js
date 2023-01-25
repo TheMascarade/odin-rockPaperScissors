@@ -1,87 +1,98 @@
 function getRandomIntInclusive(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
-	return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+	return Math.floor(Math.random() * (max - min + 1) + min);
 }
-class RockPaperScissorsGame{
-	constructor() {
-		this.humanPlayer = new HumanPlayer;
-		this.machinePlayer = new MachinePlayer;
-	}
-	choice = {
-		Rock:Symbol("rock"),
-		Paper:Symbol("paper"),
-		Scissors:Symbol("scissors"),
-	}
-	choiceArray = [this.choice.Rock,
-		this.choice.Paper, 
-		this.choice.Scissors];
+const gameChoice = {
+	Rock: "rock",
+	Paper: "paper",
+	Scissors: "scissors",
+}
+const RockPaperScissorsGame = function() {
+	choiceArray = [
+		gameChoice.Rock,
+		gameChoice.Paper,
+		gameChoice.Scissors];
 	results = {
-		Draw:Symbol('draw'),
-		Human:Symbol('human'),
-		Machine:Symbol('machine')
+		Draw: 'draw',
+		Human: 'human',
+		Machine: 'machine'
 	}
-	result
-	gameResult(humanChoice, machineChoice) {
+	result = results;
+	const gameResult = (humanChoice, machineChoice) => {
 		if (humanChoice == machineChoice) {
 			this.result = this.results.Draw;
 		} else {
 			switch (humanChoice) {
-				case this.choice.Rock:
-					if (machineChoice == this.choice.Paper) {
+				case gameChoice.Rock:
+					if (machineChoice == gameChoice.Paper) {
 						this.result = this.results.Machine;
 					} else {
 						this.result = this.results.Human;
 					}
 					break;
-				case this.choice.Paper:
-					if (machineChoice == this.choice.Rock) {
+				case gameChoice.Paper:
+					if (machineChoice == gameChoice.Rock) {
 						this.result = this.results.Human;
 					} else {
 						this.result = this.results.Machine;
 					}
 					break;
-				case this.choice.Scissors:
-					if (machineChoice == this.choice.Paper) {
+				case gameChoice.Scissors:
+					if (machineChoice == gameChoice.Paper) {
 						this.result = this.results.Human;
 					} else {
 						this.result = this.results.Machine;
 					}
 			}
 		}
+		return this.result;
 	}
-	displayMessage(){
-		switch (this.result) {
+	const displayMessage = (result, humanChoice, machineChoice) => {
+		const resultParagraph = document.querySelector(".c-resultado_partida");
+		switch (result) {
 			case this.results.Draw:
-				console.log("Es un empate!");
+				resultParagraph.textContent = "It's a tie!";
 				break;
 			case this.results.Human:
-				console.log("Ganaste!");
+				resultParagraph.textContent =
+					`You win! ${humanChoice} is better than ${machineChoice}`;
 				break;
 			case this.results.Machine:
-				console.log("Perdiste!");
+				resultParagraph.textContent =
+					`You lose! ${machineChoice} is better than ${humanChoice}`;
 				break;
 		}
 	}
-	play() {
-		this.gameResult(this.humanPlayer.getChoice(this.choiceArray), this.machinePlayer.getChoice(this.choiceArray));
-		this.displayMessage(this.result);
+	const play = (humanChoice) => {
+		const machineChoice = MachinePlayer().getChoice(choiceArray);
+		const result = gameResult(humanChoice, machineChoice);
+		displayMessage(result, humanChoice, machineChoice);
+	}
+	return {
+		play: play,
 	}
 }
-class HumanPlayer {
-	choice
-	getChoice(choiceArray){
-		/*this.choice = parseInt.apply(window.prompt(
-		`Elija una arma:
-			1: Roca
-			2: Papel
-			3: Tijeras`));*/
-		return choiceArray[0];
+const HumanPlayer = function() {
+	const getChoice = () => {
+		let playerChoices = document.querySelectorAll(".playerChoice");
+		playerChoices.forEach((choice) => {
+			choice.addEventListener('click', () => {
+				const playerChoice = choice.dataset.player_choice;
+				return RockPaperScissorsGame().play(playerChoice);
+			});
+		});
+	}
+	return {
+		getChoice: getChoice,
 	}
 }
-class MachinePlayer {
-	choice
-	getChoice(choiceArray){
-		return choiceArray[getRandomIntInclusive(0,2)];
+const MachinePlayer = function() {
+	const getChoice = (choiceArray) => {
+		return choiceArray[getRandomIntInclusive(0, 2)];
+	}
+	return {
+		getChoice: getChoice,
 	}
 }
+HumanPlayer().getChoice();

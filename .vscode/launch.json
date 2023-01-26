@@ -4,12 +4,35 @@
 	// Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
 	"configurations": [
+	{
+		"name": "Attach",
+		"port": 9229,
+		"request": "attach",
+		"skipFiles": [
+			"<node_internals>/**"
+		],
+		"type": "node"
+	},
 		{
-			"type": "chrome",
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"name": "nodemon",
+			"program": "${workspaceFolder}/JS/rockPaperScissors.js",
 			"request": "launch",
-			"name": "Iniciar Chrome para localhost",
-			"url": "http://localhost:8080",
-			"webRoot": "${workspaceFolder}"
-		}
+			"restart": true,
+			"runtimeExecutable": "nodemon",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"type": "node"
+		},
+		{
+			"type": "firefox",
+			"request": "launch",
+			"reAttach": true,
+			"name": "Launch index.html",
+			"file": "${workspaceFolder}/index.html"
+		},
+
 	]
 }

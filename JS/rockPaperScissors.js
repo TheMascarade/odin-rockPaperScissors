@@ -1,98 +1,146 @@
-function getRandomIntInclusive(min, max) {
-	min = Math.ceil(min);
-	max = Math.floor(max);
-	return Math.floor(Math.random() * (max - min + 1) + min);
-}
-const gameChoice = {
-	Rock: "rock",
-	Paper: "paper",
-	Scissors: "scissors",
-}
-const RockPaperScissorsGame = function() {
-	choiceArray = [
-		gameChoice.Rock,
-		gameChoice.Paper,
-		gameChoice.Scissors];
-	results = {
-		Draw: 'draw',
+function RockPaperScissorsGame() {
+	WeaponChoice = {
+		Rock: "rock",
+		Paper: "paper",
+		Scissors: "scissors"
+	};
+	RoundResult = {
+		Tie: "tie",
+		Human: "human",
+		Machine: "machine"
+	};
+	MatchResult = {
 		Human: 'human',
 		Machine: 'machine'
 	}
-	result = results;
-	const gameResult = (humanChoice, machineChoice) => {
+	getWeaponChoice = () => {
+		return weaponChoice;
+	};
+	getRoundResult = (humanChoice, machineChoice) => {
 		if (humanChoice == machineChoice) {
-			this.result = this.results.Draw;
-		} else {
-			switch (humanChoice) {
-				case gameChoice.Rock:
-					if (machineChoice == gameChoice.Paper) {
-						this.result = this.results.Machine;
-					} else {
-						this.result = this.results.Human;
-					}
-					break;
-				case gameChoice.Paper:
-					if (machineChoice == gameChoice.Rock) {
-						this.result = this.results.Human;
-					} else {
-						this.result = this.results.Machine;
-					}
-					break;
-				case gameChoice.Scissors:
-					if (machineChoice == gameChoice.Paper) {
-						this.result = this.results.Human;
-					} else {
-						this.result = this.results.Machine;
-					}
-			}
+			return RoundResult.Tie;
 		}
-		return this.result;
-	}
-	const displayMessage = (result, humanChoice, machineChoice) => {
-		const resultParagraph = document.querySelector(".c-resultado_partida");
-		switch (result) {
-			case this.results.Draw:
-				resultParagraph.textContent = "It's a tie!";
+		switch (humanChoice) {
+			case WeaponChoice.Rock:
+				if (machineChoice == WeaponChoice.Paper) {
+					return RoundResult.Machine;
+				} else {
+					return RoundResult.Human;
+				}
+			case WeaponChoice.Paper:
+				if (machineChoice == WeaponChoice.Scissors) {
+					return RoundResult.Machine;
+				} else {
+					return RoundResult.Human;
+				}
+			case WeaponChoice.Scissors:
+				if (machineChoice == WeaponChoice.Rock) {
+					return RoundResult.Machine;
+				} else {
+					return RoundResult.Human;
+				}
+		}
+	};
+	displayRoundResult = (roundResult, humanChoice, machineChoice) => {
+		const ResultParagraph = document.querySelector(".c-resultado_partida");
+		switch (roundResult) {
+			case RoundResult.Tie:
+				ResultParagraph.textContent =
+					`It's a tie!`;
 				break;
-			case this.results.Human:
-				resultParagraph.textContent =
-					`You win! ${humanChoice} is better than ${machineChoice}`;
+			case RoundResult.Human:
+				ResultParagraph.textContent =
+					`You win! ${humanChoice} beats ${machineChoice}!`
 				break;
-			case this.results.Machine:
-				resultParagraph.textContent =
-					`You lose! ${machineChoice} is better than ${humanChoice}`;
-				break;
+			case RoundResult.Machine:
+				ResultParagraph.textContent =
+					`You lose! ${machineChoice} beats ${humanChoice}!`
 		}
 	}
-	const play = (humanChoice) => {
-		const machineChoice = MachinePlayer().getChoice(choiceArray);
-		const result = gameResult(humanChoice, machineChoice);
-		displayMessage(result, humanChoice, machineChoice);
+	displayPlayersScores = (roundResult) => {
+		const HumanScoreElement = document.querySelector(".c-human_score");
+		const MachineScoreElement = document.querySelector(".c-machine_score");
+		HumanScoreElement.textContent = 
+			`${humanPlayer.getRoundScore()}`;
+		MachineScoreElement.textContent = 
+			`${machinePlayer.getRoundScore()}`;
 	}
+	updateMatchScores = (roundResult) => {
+		switch (roundResult) {
+			case RoundResult.Human:
+				humanPlayer.updateRoundScore();
+				break;
+			case RoundResult.Machine:
+				machinePlayer.updateRoundScore();
+				break;
+		}
+		let humanScore = humanPlayer.getRoundScore();
+		let machineScore = machinePlayer.getRoundScore();
+		if ( humanScore == 5 || machineScore == 5) {
+			displayMatchResult(humanScore, machineScore);
+		}
+	}
+	displayMatchResult = (humanScore, machineScore) => {
+		
+	}
+	playRound = (humanChoice) => {
+		const machineChoice = machinePlayer.getChoice(WeaponChoice);
+		const roundResult = getRoundResult(humanChoice, machineChoice);
+		displayRoundResult(roundResult, humanChoice, machineChoice);
+		updateMatchScores(roundResult);
+		displayPlayersScores(roundResult);
+	};
 	return {
-		play: play,
-	}
+		getWeaponChoice: getWeaponChoice,
+		playRound: playRound,
+	};
 }
-const HumanPlayer = function() {
-	const getChoice = () => {
-		let playerChoices = document.querySelectorAll(".playerChoice");
-		playerChoices.forEach((choice) => {
-			choice.addEventListener('click', () => {
-				const playerChoice = choice.dataset.player_choice;
-				return RockPaperScissorsGame().play(playerChoice);
+function HumanPlayer() {
+	let roundScore = 0;
+	getChoice = () => {
+		const humanChoices = document.querySelectorAll(".playerChoice");
+		humanChoices.forEach(choice => {
+			choice.addEventListener("click", () => {
+				const humanChoice = choice.dataset.player_choice;
+				return rpsGame.playRound(humanChoice);
 			});
 		});
+	};
+	getRoundScore = () => {
+		return roundScore;
+	}
+	updateRoundScore = () => {
+		roundScore += 1;
 	}
 	return {
 		getChoice: getChoice,
+		updateRoundScore: updateRoundScore,
+		getRoundScore: getRoundScore,
 	}
 }
-const MachinePlayer = function() {
-	const getChoice = (choiceArray) => {
-		return choiceArray[getRandomIntInclusive(0, 2)];
+function MachinePlayer() {
+	let roundScore = 0;
+	getChoice = (WeaponChoices) => {
+		const WeaponKeys = Object.keys(WeaponChoices);
+		return WeaponChoices[WeaponKeys[WeaponKeys.length * Math.random() << 0]];
+	}
+	updateRoundScore = () => {
+		roundScore += 1;
+	}
+	resetRoundScore = () => {
+		roundScore = 0;
+	}
+	getRoundScore = () => {
+		return roundScore;
 	}
 	return {
 		getChoice: getChoice,
+		updateRoundScore: updateRoundScore,
+		getRoundScore: getRoundScore,
+		reserRoundScore: resetRoundScore,
 	}
 }
-HumanPlayer().getChoice();
+const rpsGame = new RockPaperScissorsGame;
+const humanPlayer = new HumanPlayer;
+const machinePlayer = new MachinePlayer;
+humanPlayer.getChoice();

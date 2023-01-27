@@ -57,7 +57,7 @@ function RockPaperScissorsGame() {
 					`You lose! ${machineChoice} beats ${humanChoice}!`
 		}
 	}
-	displayPlayersScores = (roundResult) => {
+	displayPlayersScores = () => {
 		const HumanScoreElement = document.querySelector(".c-human_score");
 		const MachineScoreElement = document.querySelector(".c-machine_score");
 		HumanScoreElement.textContent = 
@@ -76,19 +76,48 @@ function RockPaperScissorsGame() {
 		}
 		let humanScore = humanPlayer.getRoundScore();
 		let machineScore = machinePlayer.getRoundScore();
-		if ( humanScore == 5 || machineScore == 5) {
-			displayMatchResult(humanScore, machineScore);
+		if (humanScore == 5) {
+			displayMatchResult(
+				MatchResult.Human, 
+				humanScore, 
+				machineScore
+			);
+		} else if (machineScore == 5) {
+			displayMatchResult(
+				MatchResult.Machine,
+				humanScore,
+				machineScore
+			);
 		}
 	}
-	displayMatchResult = (humanScore, machineScore) => {
-		
+	displayMatchResult = (matchResult, humanScore, machineScore) => {
+		humanPlayer.resetRoundScore();
+		machinePlayer.resetRoundScore();
+		const ResultsDiv = document.querySelector(".c-results");
+		const MatchResultNode = document.createElement("h3");
+		const MatchResultNodePrev = document.querySelector(".c-match_result");
+		MatchResultNode.classList.add("c-match_result");
+		switch (matchResult) {
+			case MatchResult.Human:
+				MatchResultNode.textContent =
+					`You win the match ${humanScore} / ${machineScore}`;
+				break;
+			case MatchResult.Machine:
+				MatchResultNode.textContent =
+					`You lost the match ${machineScore} / ${humanScore}`
+		}
+		if (MatchResultNodePrev) {
+			ResultsDiv.replaceChild(MatchResultNode,MatchResultNodePrev);
+		} else {
+			ResultsDiv.appendChild(MatchResultNode);
+		}
 	}
 	playRound = (humanChoice) => {
 		const machineChoice = machinePlayer.getChoice(WeaponChoice);
 		const roundResult = getRoundResult(humanChoice, machineChoice);
 		displayRoundResult(roundResult, humanChoice, machineChoice);
 		updateMatchScores(roundResult);
-		displayPlayersScores(roundResult);
+		displayPlayersScores();
 	};
 	return {
 		getWeaponChoice: getWeaponChoice,
@@ -112,10 +141,14 @@ function HumanPlayer() {
 	updateRoundScore = () => {
 		roundScore += 1;
 	}
+	resetRoundScore = () => {
+		roundScore = 0;
+	}
 	return {
 		getChoice: getChoice,
 		updateRoundScore: updateRoundScore,
 		getRoundScore: getRoundScore,
+		resetRoundScore: resetRoundScore,
 	}
 }
 function MachinePlayer() {
@@ -137,7 +170,7 @@ function MachinePlayer() {
 		getChoice: getChoice,
 		updateRoundScore: updateRoundScore,
 		getRoundScore: getRoundScore,
-		reserRoundScore: resetRoundScore,
+		resetRoundScore: resetRoundScore,
 	}
 }
 const rpsGame = new RockPaperScissorsGame;
